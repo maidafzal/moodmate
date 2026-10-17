@@ -18,10 +18,10 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
+from inference import EmotionModel
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(HERE, "model", "moodmate_lstm.keras")
+WEIGHTS_PATH = os.path.join(HERE, "model", "weights.npz")
 VOCAB_PATH = os.path.join(HERE, "model", "vocab.json")
 RESULTS_DIR = os.path.join(HERE, "results")
 
@@ -102,27 +102,18 @@ CRISIS_PHRASES = ["suicide", "kill myself", "end my life", "want to die", "self 
 # ----------------------------------------------------------------------------
 @st.cache_resource(show_spinner="Waking up the AI model...")
 def load_model():
-    import tensorflow as tf
-    from tensorflow import keras
-
-    model = keras.models.load_model(MODEL_PATH)
-    with open(VOCAB_PATH) as f:
-        meta = json.load(f)
-    vectorizer = keras.layers.TextVectorization(
-        vocabulary=meta["vocab"], output_sequence_length=meta["max_len"])
-    return tf, model, vectorizer, meta["max_len"]
+    return EmotionModel(WEIGHTS_PATH, VOCAB_PATH)
 
 
 def predict(texts):
     """List of sentences -> array of shape (n, 6) with one probability per emotion."""
-    tf, model, vectorizer, _ = load_model()
-    return model(vectorizer(tf.constant(texts)), training=False).numpy()
+    return load_model().predict(texts)
 
 
 def explain(text, emotion_idx):
     """Explainable AI: remove each word in turn and measure how much the
     confidence drops. Big drop = that word mattered."""
-    max_len = load_model()[3]
+    max_len = load_model().max_len
     words = text.split()[:max_len]
     if len(words) < 2:
         return [(w, 0.0) for w in words]
@@ -245,7 +236,7 @@ def emotion_color_scale():
 # ----------------------------------------------------------------------------
 st.set_page_config(page_title="MoodMate - AI feelings journal", page_icon="🌙", layout="centered")
 
-if not os.path.exists(MODEL_PATH):
+if not os.path.exists(WEIGHTS_PATH):
     st.error("No trained model found. Run `python train.py` first, then restart the app.")
     st.stop()
 

@@ -30,6 +30,7 @@ Many students feel stressed, lonely or anxious, but they rarely stop to name the
 | Classical ML baseline: TF-IDF + Logistic Regression | Shows whether deep learning is really better |
 | Regularisation: Dropout, Spatial Dropout, Label Smoothing, Early Stopping | Prevents over-fitting and over-confidence |
 | Explainable AI: occlusion | Remove one word at a time and see how much the confidence drops |
+| LSTM equations by hand (NumPy) | The web app runs the trained network with plain NumPy (`inference.py`), so it needs no TensorFlow; it matches TensorFlow's output on all 2,000 test sentences |
 | Responsible AI | Crisis-phrase safety message, privacy (runs locally), honest limitations |
 
 ## 3. Dataset
@@ -96,7 +97,7 @@ Charts are in `results/`: `model_comparison.png`, `confusion_matrix.png` and `tr
 
 ## 7. How to run
 
-You need **Python 3.10, 3.11 or 3.12**. Check with `python --version`.
+The app runs on any recent Python (3.9 or newer). Retraining needs TensorFlow, which supports **Python 3.10–3.12**. Check with `python --version`.
 
 **Windows**
 ```bat
@@ -120,6 +121,7 @@ The app opens at http://localhost:8501. A trained model is already included in `
 
 **To retrain the model yourself** (about 5–10 min; downloads about 30 MB of data the first time):
 ```bash
+pip install -r requirements-train.txt
 python train.py
 ```
 
@@ -133,7 +135,7 @@ python train.py
 1. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub.
 2. Click **Create app** → **Deploy a public app from GitHub**.
 3. Repository `maidafzal/moodmate`, branch `main`, main file `app.py`.
-4. Under **Advanced settings**, choose Python **3.12**. No secrets or environment variables are needed.
+4. No secrets or environment variables are needed, and any Python version works.
 5. Click **Deploy**. The first build takes a few minutes while TensorFlow installs.
 
 ## 8. Project structure
@@ -142,8 +144,10 @@ python train.py
 MoodMate-AI/
 ├── train.py          # downloads data, trains baseline + BiLSTM, saves model and charts
 ├── app.py            # Streamlit web app
-├── requirements.txt
-├── model/            # moodmate_lstm.keras + vocab.json (trained model)
+├── inference.py      # runs the trained LSTM with plain NumPy (used by the app)
+├── requirements.txt        # app only (no TensorFlow)
+├── requirements-train.txt  # extra libraries for train.py
+├── model/            # moodmate_lstm.keras (Keras model), weights.npz (for the app), vocab.json
 ├── results/          # metrics.json, classification_report.txt, charts
 └── .streamlit/       # app theme
 ```

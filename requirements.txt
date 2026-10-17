@@ -1,7 +1,4 @@
-tensorflow>=2.16
 streamlit>=1.30
+numpy
 pandas
-pyarrow
-scikit-learn
-matplotlib
 altair

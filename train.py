@@ -196,6 +196,19 @@ os.makedirs(RESULTS_DIR, exist_ok=True)
 export = keras.models.clone_model(model)
 export.set_weights(model.get_weights())
 export.save(os.path.join(MODEL_DIR, "moodmate_lstm.keras"))
+# Raw weights for the web app, which runs the LSTM with plain NumPy (see inference.py)
+bilstm = next(l for l in model.layers if isinstance(l, layers.Bidirectional))
+dense, output = [l for l in model.layers if isinstance(l, layers.Dense)]
+to_np = keras.ops.convert_to_numpy
+np.savez_compressed(
+    os.path.join(MODEL_DIR, "weights.npz"),
+    embedding=to_np(model.layers[0].embeddings),
+    **{f"{name}_{part}": to_np(getattr(direction.cell, part))
+       for name, direction in [("forward", bilstm.forward_layer), ("backward", bilstm.backward_layer)]
+       for part in ("kernel", "recurrent_kernel", "bias")},
+    dense_kernel=to_np(dense.kernel), dense_bias=to_np(dense.bias),
+    output_kernel=to_np(output.kernel), output_bias=to_np(output.bias),
+)
 with open(os.path.join(MODEL_DIR, "vocab.json"), "w") as f:
     json.dump({"vocab": vocab, "max_len": MAX_LEN, "emotions": EMOTIONS}, f)
 

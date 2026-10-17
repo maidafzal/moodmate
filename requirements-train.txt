@@ -1,0 +1,5 @@
+-r requirements.txt
+tensorflow>=2.16
+scikit-learn
+pyarrow
+matplotlib
