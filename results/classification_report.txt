@@ -1,0 +1,41 @@
+Bidirectional LSTM - test set (2,000 unseen sentences)
+
+              precision    recall  f1-score   support
+
+     sadness      0.989     0.964     0.976       581
+         joy      0.953     0.960     0.956       695
+        love      0.853     0.805     0.828       159
+       anger      0.920     0.964     0.941       275
+        fear      0.884     0.955     0.918       224
+    surprise      0.870     0.712     0.783        66
+
+    accuracy                          0.941      2000
+   macro avg      0.912     0.893     0.901      2000
+weighted avg      0.941     0.941     0.940      2000
+
+Real-world check (67% correct)
+
+OK  expected sadness   got sadness   | i feel so lonely since my best friend moved away
+OK  expected sadness   got sadness   | i failed my driving test again and i feel hopeless
+X   expected sadness   got joy       | nobody remembered my birthday today
+X   expected sadness   got joy       | i am not happy at all today
+OK  expected joy       got joy       | i got the internship i applied for, i am so happy
+OK  expected joy       got joy       | today was a wonderful day at the beach with friends
+OK  expected joy       got joy       | i finally understood the topic i was struggling with and i feel great
+OK  expected joy       got joy       | i passed all my exams and feel amazing
+X   expected love      got sadness   | i love my little sister so much
+X   expected love      got joy       | i feel so much affection for my grandparents
+X   expected love      got sadness   | i adore spending time with my best friend
+OK  expected love      got love      | had dinner with my parents and i feel so loved and cared for
+OK  expected anger     got anger     | i feel so angry that my brother broke my headphones
+OK  expected anger     got anger     | i am furious that the shop refused to refund me
+OK  expected anger     got anger     | people who cut in line make me so mad
+OK  expected anger     got anger     | my boss yelled at me for no reason and i am irritated
+OK  expected fear      got fear      | i am scared to walk home alone at night
+OK  expected fear      got fear      | i feel anxious about my job interview tomorrow
+OK  expected fear      got fear      | i am terrified of the dentist appointment
+X   expected fear      got sadness   | i feel so stressed and worried about the presentation on monday
+OK  expected surprise  got surprise  | i was shocked to see snow in october
+X   expected surprise  got joy       | i could not believe it when they announced my name
+OK  expected surprise  got surprise  | i was amazed by how big the city was
+X   expected surprise  got sadness   | wow i did not expect that ending at all

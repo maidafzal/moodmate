@@ -1,0 +1,16 @@
+{
+  "baseline_tfidf_logreg": {
+    "accuracy": 0.908,
+    "macro_f1": 0.8588,
+    "real_world": 0.6667
+  },
+  "bilstm": {
+    "accuracy": 0.9405,
+    "macro_f1": 0.9007,
+    "real_world": 0.6667
+  },
+  "epochs_trained": 4,
+  "train_size": 389827,
+  "test_size": 2000,
+  "real_world_size": 24
+}
