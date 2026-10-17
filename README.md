@@ -92,7 +92,7 @@ Charts are in `results/`: `model_comparison.png`, `confusion_matrix.png` and `tr
 4. **Mood journey**: saved entries over time, how often you felt each emotion, and the share of positive entries. A **"Load a demo week"** button fills it for presentations.
 5. **How the AI works** tab: the pipeline, the results table and the charts, ready to show your teacher.
 6. **Safety**: phrases such as "want to die" or "hurt myself" always show a support message, whatever the model predicts.
-7. **Privacy**: everything runs locally. The journal is just `journal.csv` on your computer.
+7. **Privacy**: entries are never saved on a server. Each visitor's journal lives only in their browser session, and they can download it as a CSV or clear it.
 
 ## 7. How to run
 
@@ -128,6 +128,13 @@ python train.py
 **Troubleshooting**
 - On a Mac, if TensorFlow crashes with `mutex lock failed`, run `pip install "tensorflow==2.19.*"`.
 - If you see `No trained model found`, run `python train.py` first.
+
+**Deploy online (free) with Streamlit Community Cloud**
+1. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub.
+2. Click **Create app** → **Deploy a public app from GitHub**.
+3. Repository `maidafzal/moodmate`, branch `main`, main file `app.py`.
+4. Under **Advanced settings**, choose Python **3.12**. No secrets or environment variables are needed.
+5. Click **Deploy**. The first build takes a few minutes while TensorFlow installs.
 
 ## 8. Project structure
 
@@ -182,7 +189,7 @@ Occlusion. We remove one word at a time and re-run the model. The bigger the dro
 Instead of training towards 100% certainty, we train towards 90%. This makes the confidence scores shown in the app more honest.
 
 **How is user privacy protected?**
-The model runs on the user's own computer. No text is sent to any server, and the journal is a local CSV file the user can delete with one button.
+Entries are analysed in memory and never stored on the server. Each visitor's journal exists only in their own browser session, and they can download it or clear it with one button.
 
 ## References
 - Saravia, E., Liu, H.-C. T., Huang, Y.-H., Wu, J., & Chen, Y.-S. (2018). *CARER: Contextualized Affect Representations for Emotion Recognition.* EMNLP.

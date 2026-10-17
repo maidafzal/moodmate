@@ -24,7 +24,6 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(HERE, "model", "moodmate_lstm.keras")
 VOCAB_PATH = os.path.join(HERE, "model", "vocab.json")
 RESULTS_DIR = os.path.join(HERE, "results")
-JOURNAL_PATH = os.path.join(HERE, "journal.csv")
 
 # Everything the app says about each emotion. Colours are a colour-blind-checked palette.
 EMOTION_INFO = {
@@ -133,19 +132,17 @@ def explain(text, emotion_idx):
 
 
 # ----------------------------------------------------------------------------
-# Journal (saved locally in journal.csv - never sent anywhere)
+# Journal (kept in this browser session only - private to each visitor,
+# never saved on the server)
 # ----------------------------------------------------------------------------
 def read_journal():
-    if os.path.exists(JOURNAL_PATH):
-        df = pd.read_csv(JOURNAL_PATH, parse_dates=["time"])
-        if not df.empty:
-            return df
-    return pd.DataFrame(columns=["time", "entry", "emotion", "confidence"])
+    return st.session_state.get("journal", pd.DataFrame(columns=["time", "entry", "emotion", "confidence"]))
 
 
 def add_entries(rows):
-    df = pd.concat([read_journal(), pd.DataFrame(rows)], ignore_index=True)
-    df.to_csv(JOURNAL_PATH, index=False)
+    new = pd.DataFrame(rows)
+    old = read_journal()
+    st.session_state.journal = new if old.empty else pd.concat([old, new], ignore_index=True)
 
 
 # ----------------------------------------------------------------------------
@@ -421,9 +418,13 @@ with tab_journey:
 
         with st.expander("See all entries"):
             st.dataframe(journal.sort_values("time", ascending=False), hide_index=True)
-        if st.button("🗑️ Clear my journal"):
-            os.remove(JOURNAL_PATH)
+        c1, c2 = st.columns(2)
+        c1.download_button("⬇️ Download my journal", journal.to_csv(index=False),
+                           "moodmate_journal.csv", "text/csv")
+        if c2.button("🗑️ Clear my journal"):
+            st.session_state.pop("journal", None)
             st.rerun()
+        st.caption("Your journal lives only in this browser session - download it to keep it.")
 
 # --- Tab 3: how it works -----------------------------------------------------
 with tab_how:
@@ -463,6 +464,6 @@ with tab_how:
 #### Responsible AI
 - **Not a diagnosis.** The model detects emotion in text; it does not understand your life.
 - **Safety first.** Crisis phrases always trigger a support message, whatever the model predicts.
-- **Privacy.** Everything runs on your computer - no text is sent to any server.
+- **Privacy.** Entries are never saved on a server - your journal exists only in your browser session, and you can download or clear it any time.
 - **Known limits.** Trained on short English sentences that mostly start with *"i feel..."*, so it is weaker on everyday phrasing, negation (*"not happy"*), sarcasm, slang and other languages.
 """)
